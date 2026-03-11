@@ -40,7 +40,6 @@ class PingGraph(Static):
         plot_widget = self.query_one("#ping-plot", PlotextPlot)
         plt = plot_widget.plt
         plt.clear_figure()
-        # Warnanya bisa lo ganti-ganti di sini kaya yang gwe ajarin kemaren
         plt.plot(list(self.ping_data), color="blue")
         plt.canvas_color("black")
         plt.axes_color("black")
