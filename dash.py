@@ -172,7 +172,6 @@ class SystemctlMenu(Static):
     def execute_command(self, event: Button.Pressed) -> None:
         button_id = event.button.id
         command = []
-        # Sekarang command-nya pake variabel dinamis self.apache_service
         if button_id == "btn-start": command = ["sudo", "systemctl", "start", self.apache_service]
         elif button_id == "btn-stop": command = ["sudo", "systemctl", "stop", self.apache_service]
         elif button_id == "btn-restart": command = ["sudo", "systemctl", "restart", self.apache_service]
@@ -189,11 +188,9 @@ class SystemctlMenu(Static):
                 self.app.notify(f"SYSTEM ERROR: {e}", title="FATAL", severity="error")
 
 class WebLogTracker(Static):
-    # Default path log untuk Arch Linux
     log_path = "/var/log/httpd/access_log"
 
     def on_mount(self) -> None:
-        # DETEKSI OTOMATIS: Cek path log Ubuntu/Debian
         if os.path.exists("/var/log/apache2/access.log"):
             self.log_path = "/var/log/apache2/access.log"
 
@@ -206,7 +203,6 @@ class WebLogTracker(Static):
 
     def update_log(self) -> None:
         try:
-            # Sekarang tail baca log dinamis sesuai OS
             result = subprocess.run(["sudo", "tail", "-n", "8", self.log_path], capture_output=True, text=True)
             if result.returncode == 0 and result.stdout.strip():
                 log_text = result.stdout
@@ -284,7 +280,6 @@ class SystemHardware(Static):
         except Exception:
             ram_pct, swap_pct, ram_total, ram_used, swap_used = 0, 0, 0, 0, 0
 
-        # 2. AMBIL CPU
         try:
             top_out = subprocess.run(["top", "-bn1"], capture_output=True, text=True).stdout
             match = re.search(r'(\d+\.\d+)\s+id', top_out)
@@ -292,30 +287,21 @@ class SystemHardware(Static):
         except Exception:
             cpu_pct = 0.0
 
-        # 3. AMBIL SUHU DARI SENSOR KERNEL
         try:
             with open("/sys/class/thermal/thermal_zone0/temp", "r") as f:
-                # File ini ngeluarin angka dalam millidegree (misal 45000 = 45°C)
                 temp_c = float(f.read().strip()) / 1000.0
         except Exception:
             temp_c = 0.0
 
-        # Batasin bar mentok di 100°C aja biar grafiknya gak error
         bar_temp = min(temp_c, 100.0)
 
-        # UPDATE PROGRESS BAR
         self.query_one("#cpu-bar", ProgressBar).update(progress=cpu_pct)
         self.query_one("#ram-bar", ProgressBar).update(progress=ram_pct)
         self.query_one("#swap-bar", ProgressBar).update(progress=swap_pct)
         self.query_one("#temp-bar", ProgressBar).update(progress=bar_temp)
 
-        # UPDATE DETAIL TEKS DI BAWAH
         details = f"[cyan]CPU:[/] {cpu_pct:.1f}%  |  [cyan]RAM:[/] {ram_used:.0f}/{ram_total:.0f} MB  |  [cyan]SWAP:[/] {swap_used:.0f} MB  |  [red]SUHU:[/] {temp_c:.1f}°C"
         self.query_one("#hw-details", Label).update(details)
-
-# ==========================================
-# APLIKASI UTAMA
-# ==========================================
 
 class DashboardApp(App):
     CSS = """
