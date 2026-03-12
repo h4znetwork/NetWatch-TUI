@@ -16,7 +16,7 @@ A cyberpunk-themed, terminal-based dashboard for local web development, network 
 It is highly recommended to use a Python Virtual Environment (`env`) to avoid conflicts with your system packages.
 
 **1. Clone the repository**
-git clone [https://github.com/USERNAME_LO/NetMatrix-TUI.git](https://github.com/USERNAME_LO/NetMatrix-TUI.git)
+git clone [https://github.com/USERNAME_LO/NetMatrix-TUI.git](https://github.com/h4znetwork/NetMatrix-TUI.git)
 cd NetMatrix-TUI
 
 **2. How to run the script**
